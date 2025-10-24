@@ -1,0 +1,67 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Student List</title>
+  <link rel="stylesheet" type= "text/css" href= "{% static 'css/style.css' %}">
+</head>
+<body>
+  <h1>Student List</h1>
+
+  <div class="download-buttons">
+    <a href="{% url 'student_list_pdf' %}" target="_blank" class="btn">Download PDF</a>
+    <a href="{% url 'student_list_excel' %}" class="btn">Download Excel</a>
+</div>
+
+  <form method='get'>
+    <input type="text" name="q" placeholder= "Search by name" value= "{{ query }}">
+    <button type="submit">Search</button>
+  </form>
+  <br>
+
+  <table border= '1'>
+    <tr>
+      <th>S.No</th>
+      <th>Photo</th>
+      <th>Name</th>
+      <th>Roll No</th>
+      <th>Department</th>
+      <th>Email</th>
+      <th>Maths</th>
+      <th>Physics</th>
+      <th>Chemistry</th>
+      <th>Hindi</th>
+      <th>English</th>
+      <th>Action</th>
+    </tr>
+    {% for student in students %}
+    <tr>
+      <td>{{ forloop.counter }}</td>
+      <td>
+        {% if student.photo %}
+          <img src="{{ student.photo.url }}" width="50" height= "50">
+        {% else %}
+          No Photo
+        {% endif %}
+      </td>
+      <td>{{ student.name }}</td>
+      <td>{{ student.roll_no }}</td>
+      <td>{{ student.department }}</td>
+      <td>{{ student.email }}</td>
+      <td>{{ student.maths }}</td>
+      <td>{{ student.physics }}</td>
+      <td> {{ student.chemistry }}</td>
+      <td> {{ student.hindi }}</td>
+      <td> {{ student.english }}</td>
+
+      <td>
+        <a href="{% url 'generate_report' student.id %}" class= "btn bth-sm btn-success">Download Report Card</a>
+      </td>
+      
+    </tr>
+    {% endfor %}
+  </table>
+</body>
+</html>

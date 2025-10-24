@@ -1,0 +1,91 @@
+/* Student List Page Styles */
+
+body {
+    font-family: Verdana, sans-serif;
+    background-color: #e6f0fa; /* lighter sky blue tone instead of white */
+    margin: 0;
+    padding: 20px;
+}
+
+h1 {
+    color: #1a5276;
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+/* Student Table */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: #f2f7fb; /* softer blue-gray instead of white */
+    box-shadow: 0px 4px 8px rgba(0,0,0,0.1);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+th, td {
+    padding: 12px 15px;
+    text-align: center;
+}
+
+th {
+    background-color: #2471a3;
+    color: #ffffff;
+    font-size: 16px;
+}
+
+td {
+    border-bottom: 1px solid #cfd8dc;
+}
+
+/* Alternate row colors */
+tr:nth-child(even) {
+    background-color: #d6eaf8;
+}
+
+/* Hover effect */
+tr:hover {
+    background-color: #aed6f1;
+}
+
+/* Student photo */
+td img {
+    border-radius: 50%;
+    border: 2px solid #1a5276;
+}
+
+/* Search bar styling */
+input[type="text"] {
+    padding: 10px;
+    width: 250px;
+    border-radius: 5px;
+    border: 1px solid #bbb;
+    margin-bottom: 15px;
+    background-color: #f2f7fb;
+}
+
+
+
+/* Download buttons container */
+.download-buttons {
+    text-align: right; /* Moves buttons to the right */
+    margin-bottom: 15px; /* Space below buttons */
+}
+
+/* Button styling */
+.download-buttons .btn {
+    display: inline-block;
+    background-color: #2980b9;
+    color: white;
+    padding: 8px 16px;
+    margin-left: 10px; /* Space between buttons */
+    text-decoration: none;
+    border-radius: 5px;
+    font-weight: bold;
+    transition: background-color 0.3s ease;
+}
+
+.download-buttons .btn:hover {
+    background-color: #1f618d;
+}
+

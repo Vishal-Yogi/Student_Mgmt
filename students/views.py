@@ -1,0 +1,200 @@
+from django.shortcuts import render
+from .models import Student
+
+
+from django.http import HttpResponse
+from django.template.loader import get_template
+from xhtml2pdf import pisa
+
+
+import openpyxl
+
+
+from reportlab.pdfgen.canvas import Canvas
+from reportlab.lib.pagesizes import A4
+# from reportlab.lib import colors
+# from reportlab.lib.units import inch
+
+
+
+# Create your views here.
+def student_list(request):
+  query = request.GET.get('q')
+  if query:
+    students = Student.objects.filter(
+      name__icontains=query
+    )
+  else:
+    students = Student.objects.all()
+  return render(request, 'students/student_list.html', {'students': students, 'query': query})
+
+
+
+
+def dashboard(request):
+  students = Student.objects.all()
+  total_students = students.count()
+
+
+  top_scorer = None
+  highest_marks = 0
+  for student in students:
+    if student.total_marks > highest_marks:
+      highest_marks = student.total_marks
+      top_scorer = student
+
+
+  pass_count = 0
+  atkt_count = 0
+  fail_count = 0
+  for student in students:
+    status = student.status
+    if status == "Pass":
+      pass_count = pass_count + 1
+    elif status == "ATKT":
+      atkt_count = atkt_count + 1
+    else:
+      fail_count = fail_count + 1 
+
+
+  context = {
+    'total_students': total_students,
+    'top_scorer': top_scorer,
+    'pass_count': pass_count,
+    'atkt_count': atkt_count,
+    'fail_count': fail_count,
+  } 
+
+
+  return render(request, 'students/dashboard.html', context)
+
+
+
+
+def student_list_pdf(request):
+  students = Student.objects.all()
+  template_path = 'students/student_list_pdf.html'
+  context = {'students': students}
+
+
+
+  response = HttpResponse(content_type= 'application/pdf')
+  response['Content-Disposition'] = 'attachment; filename="student_list.pdf"'
+
+
+  template = get_template(template_path)
+  html = template.render(context)
+  pisa_status = pisa.CreatePDF(html, dest=response)
+
+
+  if pisa_status.err:
+    return HttpResponse('We had some errors <pre>' + html + '</pre>')
+  return response 
+
+
+
+
+def student_list_excel(request):
+  workbook = openpyxl.Workbook()
+  sheet = workbook.active
+  sheet.title = "Students"
+
+  headers = ["S.No", "Name", "Roll No", "Department", "Maths", "Physics", "Chemistry", "Hindi", "English", "Total Marks", "Percentage", "Status"]
+  sheet.append(headers)
+
+
+  students = Student.objects.all()
+  for idx, student in enumerate(students, start=1):
+    row = [
+      idx,
+      student.name,
+      student.roll_no,
+      student.department,
+      student.maths,
+      student.physics,
+      student.chemistry,
+      student.hindi,
+      student.english,
+      student.total_marks,
+      student.percentage,
+      student.status
+    ]
+    sheet.append(row)
+
+
+  response = HttpResponse(
+    content_type = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+  )
+
+  response['Content-Disposition'] = 'attachment; filename=student_list.xlsx'
+  workbook.save(response)
+  return response 
+
+
+
+
+def generate_report_card(request, student_id):
+  student = Student.objects.get(id=student_id)
+
+  response = HttpResponse(content_type= 'application/pdf')
+  response['Content-Disposition'] = f'attachment; filename= "{student.name}_ReportCard.pdf"'
+
+  pdf = Canvas(response, pagesize=A4)
+  width, height = A4
+
+  pdf.setFont("Helvetica-Bold", 18)
+  pdf.drawCentredString(width / 2,height - 50, "Student Report Card")
+
+  pdf.setFont("Helvetica", 12)
+  pdf.drawString(100, height - 100, f"Name: {student.name}")
+  pdf.drawString(100, height  - 120, f"Roll No: {student.roll_no}")
+  pdf.drawString(100, height - 140, f"Department: {student.department}")
+  pdf.drawString(100, height - 160, f"Email: {student.email}")
+
+  pdf.drawString(100, height - 200, "Subects & Marks:")
+  pdf.line(100, height - 205, 400, height - 205)
+
+  pdf.drawString(100, height - 230, f"Maths: {student.maths}")
+  pdf.drawString(100, height - 250, f"Physics: {student.physics}")
+  pdf.drawString(100, height - 270, f"Chemistry: {student.chemistry}")
+  pdf.drawString(100, height - 290, f"Hindi: {student.hindi}")
+  pdf.drawString(100, height - 310, f"English: {student.english}")
+
+
+
+  total = student.maths + student.physics + student.chemistry + student.hindi + student.english
+  percentage = round(total / 5,2)
+
+
+  failed_subjects = 0
+  for marks in [student.maths, student.physics, student.chemistry, student.hindi, student.english]:
+    if marks < 33:
+      failed_subjects = failed_subjects + 1
+
+
+  if percentage < 33:
+    status = "Fail"
+  elif failed_subjects == 0:
+    status = "Pass"
+  elif failed_subjects <= 2:
+    status = "ATKT"
+  else:
+    status = "Fail"
+
+
+
+  pdf.setFont("Helvetica-Bold", 12)
+  pdf.drawString(100, height - 350, f"Total Marks: {total}")
+  pdf.drawString(100, height - 370, f"Percentage: {percentage}%")
+  pdf.drawString(100, height - 390, f"Status: {status}")
+
+
+  pdf.setFont("Helvetica-Oblique", 10)
+  pdf.drawString(100, 50, "Generated by Student Management System 2025")
+
+  
+  pdf.showPage()
+  pdf.save()
+  return response
+
+                 

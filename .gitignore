@@ -1,0 +1,28 @@
+# Python cache and compiled files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+venv/
+.env/
+env/
+
+# Django stuff
+*.log
+*.pot
+*.pyc
+db.sqlite3
+
+# IDEs and editors
+.vscode/
+.idea/
+*.swp
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+
+# Static and media files (optional if you regenerate them)
+staticfiles/
+media/
