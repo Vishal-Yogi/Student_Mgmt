@@ -11,6 +11,10 @@ class Student(models.Model):
     hindi = models.IntegerField()
     english = models.IntegerField()
 
+    total_marks = models.IntegerField(default=0)
+    percentage = models.FloatField(default=0)
+    status = models.CharField(max_length=20, default="Pending")
+
     email = models.EmailField()
     photo = models.ImageField(upload_to='photos/', null=True, blank=True)
 

@@ -34,6 +34,9 @@
       <th>Chemistry</th>
       <th>Hindi</th>
       <th>English</th>
+      <th>Total Marks</th>
+      <th>Percentage</th>
+      <th>Status</th>
       <th>Action</th>
     </tr>
     {% for student in students %}
@@ -55,6 +58,9 @@
       <td> {{ student.chemistry }}</td>
       <td> {{ student.hindi }}</td>
       <td> {{ student.english }}</td>
+      <td> {{ student.total_marks }}</td>
+      <td> {{ student.percentage }}</td>
+      <td> {{ student.status }}</td>
 
       <td>
         <a href="{% url 'generate_report' student.id %}" class= "btn bth-sm btn-success">Download Report Card</a>
